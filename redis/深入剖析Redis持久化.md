@@ -195,7 +195,7 @@ AOF重写分为手动触发和自动触发：
 
 **文件重写流程：**
 
-![文件重写流程](http://git.ym/panweijun/Redis/raw/branch/master/%e6%96%87%e4%bb%b6%e9%87%8d%e5%86%99%e6%b5%81%e7%a8%8b.png)
+![文件重写流程](https://github.com/yang-zhijiang/learn-data/blob/master/redis/%E6%96%87%E4%BB%B6%E9%87%8D%E5%86%99%E6%B5%81%E7%A8%8B.png)
 
 上图是文件重写的流程：
 
