@@ -122,7 +122,7 @@ Redis服务器默认开启RDB，关闭AOF；要开启AOF，需要在配置文件
 
 ![aof的执行流程](http://git.ym/panweijun/Redis/raw/branch/master/aof%e7%9a%84%e6%89%a7%e8%a1%8c%e6%b5%81%e7%a8%8b.png)
 
-
+![](E:\我的\myGit\learn-data\redis\aof的执行流程.png)
 
 上图是AOF的执行流程：
 
