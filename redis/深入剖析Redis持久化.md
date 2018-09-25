@@ -61,7 +61,7 @@ RDB文件保存在dir配置指定的目录下， 文件名通过dbfilename配置
 
 - **文件格式**
 
-![RDB文件格式](http://git.ym/panweijun/Redis/raw/branch/master/RDB%e6%96%87%e4%bb%b6%e6%a0%bc%e5%bc%8f.png)
+![RDB文件格式](http://git.ym/panweijun/Redis/src/branch/master/aof%E7%9A%84%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B.png)
 
 各个字段的含义说明如下：
 
