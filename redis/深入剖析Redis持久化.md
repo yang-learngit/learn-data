@@ -39,7 +39,7 @@ Redis是一种内存型数据库，一旦服务器进程退出，数据库的数
 
 ### 3.2执行流程
 
-![bgsave的执行流程](https://github.com/yang-zhijiang/learn-data/blob/master/redis/bgsave%E7%9A%84%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B.png)
+![bgsave的执行流程](https://raw.githubusercontent.com/yang-zhijiang/learn-data/master/redis/bgsave%E7%9A%84%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B.png)
 
 上图是bgsave的执行流程：
 
@@ -61,7 +61,7 @@ RDB文件保存在dir配置指定的目录下， 文件名通过dbfilename配置
 
 - **文件格式**
 
-![RDB文件格式](https://github.com/yang-zhijiang/learn-data/blob/master/redis/RDB%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F.png)
+![RDB文件格式](https://raw.githubusercontent.com/yang-zhijiang/learn-data/master/redis/RDB%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F.png)
 
 各个字段的含义说明如下：
 
@@ -120,7 +120,7 @@ Redis服务器默认开启RDB，关闭AOF；要开启AOF，需要在配置文件
 
 ### 4.2执行流程
 
-![aof的执行流程](https://github.com/yang-zhijiang/learn-data/blob/master/redis/aof%E7%9A%84%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B.png)
+![aof的执行流程](https://raw.githubusercontent.com/yang-zhijiang/learn-data/master/redis/aof%E7%9A%84%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B.png)
 
 上图是AOF的执行流程：
 
@@ -195,7 +195,7 @@ AOF重写分为手动触发和自动触发：
 
 **文件重写流程：**
 
-![文件重写流程](https://github.com/yang-zhijiang/learn-data/blob/master/redis/%E6%96%87%E4%BB%B6%E9%87%8D%E5%86%99%E6%B5%81%E7%A8%8B.png)
+![文件重写流程](https://raw.githubusercontent.com/yang-zhijiang/learn-data/master/redis/%E6%96%87%E4%BB%B6%E9%87%8D%E5%86%99%E6%B5%81%E7%A8%8B.png)
 
 上图是文件重写的流程：
 
@@ -217,7 +217,7 @@ AOF重写分为手动触发和自动触发：
 
 ### 4.6文件载入
 
-![Redis持久化文件加载流程](https://github.com/yang-zhijiang/learn-data/blob/master/redis/Redis%E6%8C%81%E4%B9%85%E5%8C%96%E6%96%87%E4%BB%B6%E5%8A%A0%E8%BD%BD%E6%B5%81%E7%A8%8B.png)
+![Redis持久化文件加载流程](https://raw.githubusercontent.com/yang-zhijiang/learn-data/master/redis/Redis%E6%8C%81%E4%B9%85%E5%8C%96%E6%96%87%E4%BB%B6%E5%8A%A0%E8%BD%BD%E6%B5%81%E7%A8%8B.png)
 
 上图是redis文件载入流程：
 
