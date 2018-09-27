@@ -24,7 +24,7 @@ redis-server redis.windows.conf，出现下图显示表示启动成功了。
 
 ![](https://raw.githubusercontent.com/yang-zhijiang/learn-data/master/redis/安装/redis启动.png)
 
-## **三、设置Redis服务**
+## 三、设置Redis服务
 
 1、由于上面虽然启动了redis，但是只要一关闭cmd窗口，redis就会消失。所以要把redis设置成windows下的服务。
 
