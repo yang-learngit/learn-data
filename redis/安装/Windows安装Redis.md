@@ -16,15 +16,13 @@ github下载地址：<https://github.com/MSOpenTech/redis/tags>
 
 1.这里下载的是Redis-x64-3.2.100版本，我的电脑是win7 64位，所以下载64位版本的，在运行中输入cmd，然后把目录指向解压的Redis目录。
 
-![](https://github.com/yang-zhijiang/learn-data/blob/master/redis/%E5%AE%89%E8%A3%85/reids%E8%A7%A3%E5%8E%8B%E7%9B%AE%E5%BD%95.png)
-
-![](E:\我的\myGit\learn-data\redis\安装\reids解压目录.png)
+![](https://raw.githubusercontent.com/yang-zhijiang/learn-data/master/redis/%E5%AE%89%E8%A3%85/reids%E8%A7%A3%E5%8E%8B%E7%9B%AE%E5%BD%95.png)
 
 2、启动命令
 
 redis-server redis.windows.conf，出现下图显示表示启动成功了。
 
-![](E:\我的\myGit\learn-data\redis\安装\redis启动.png)
+![](https://raw.githubusercontent.com/yang-zhijiang/learn-data/master/redis/安装/redis启动.png)
 
 ## **三、设置Redis服务**
 
@@ -32,17 +30,17 @@ redis-server redis.windows.conf，出现下图显示表示启动成功了。
 
 也就是设置到这里，首先发现是没用这个Redis服务的。
 
-![](E:\我的\myGit\learn-data\redis\安装\查看redis服务.png)
+![](https://raw.githubusercontent.com/yang-zhijiang/learn-data/master/redis/安装/查看redis服务.png)
 
 2、设置服务命令
 
 redis-server --service-install redis.windows-service.conf --loglevel verbose
 
-![](E:\我的\myGit\learn-data\redis\安装\设置redis服务命名.png)
+![](https://raw.githubusercontent.com/yang-zhijiang/learn-data/master/redis/安装/设置redis服务命名.png)
 
 输入命令之后没有报错，表示成功了，刷新服务，会看到多了一个redis服务。
 
-![](E:\我的\myGit\learn-data\redis\安装\查看redis服务存在.png)
+![](https://raw.githubusercontent.com/yang-zhijiang/learn-data/master/redis/安装/查看redis服务存在.png)
 
 3、常用的redis服务命令。
 
@@ -54,10 +52,10 @@ redis-server --service-install redis.windows-service.conf --loglevel verbose
 
 4、启动服务
 
-![](E:\我的\myGit\learn-data\redis\安装\启动redis服务.png)
+![](https://raw.githubusercontent.com/yang-zhijiang/learn-data/master/redis/安装/启动redis服务.png)
 
 5、测试Redis
 
-![](E:\我的\myGit\learn-data\redis\安装\测试redis服务.png)
+![](https://raw.githubusercontent.com/yang-zhijiang/learn-data/master/redis/安装/测试redis服务.png)
 
 安装测试成功。
