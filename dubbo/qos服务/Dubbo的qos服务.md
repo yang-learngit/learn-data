@@ -4,6 +4,8 @@ QOS=Quality of Service，不同于网络里的QOS，Dubbo里QOS用于动态控�
 
 新版本Dubbo里，QOS服务可以通过一些命令来返回响应的结果，达到动态控制的目的
 
+dubbo版本2.5.9
+
 ### 端口
 
 新版本的 telnet 端口 与 dubbo 协议的端口是不同的端口，默认为 `22222`，可通过配置文件`dubbo.properties` 修改:
@@ -80,11 +82,25 @@ https://www.cnblogs.com/acm-bingzi/p/6673823.html
 
 比较其他版本Dubbo的端口的定义方式，代码如下：
 
+![](https://raw.githubusercontent.com/yang-zhijiang/learn-data/master/dubbo/qos%E6%9C%8D%E5%8A%A1/2.6.1.png)
 
+dubbo的配置参数不同版本不同：
 
+2.5.9版本：
 
+```
+dubbo.application.qos.enable=true
+dubbo.application.qos.port=33333
+dubbo.application.qos.accept.foreign.ip=true
+```
 
+2.6.1以上版本：
 
+```
+dubbo.application.qosEnable=true
+dubbo.application.qosPort=33333
+dubbo.application.qosAcceptForeignIp=true
+```
 
 
 
