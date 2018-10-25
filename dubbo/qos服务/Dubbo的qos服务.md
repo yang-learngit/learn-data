@@ -68,7 +68,7 @@ dubbo.application.qos.enable=false
 
 ![](https://raw.githubusercontent.com/yang-zhijiang/learn-data/master/dubbo/qos%E6%9C%8D%E5%8A%A1/%E8%8E%B7%E5%8F%96%E9%85%8D%E7%BD%AE%E4%BB%A3%E7%A0%81.png)
 
-因此，Dubbo2.6.0版本不能在配置文件配置qos的参数，需要设置JVM的参数配置
+因此，Dubbo2.6.0版本不能在配置文件配置qos的参数，需要设置JVM的参数配置，且2.6.0版本固定开启qos服务，不能通过配置文件关闭qos服务
 
 ```
 System.getProperty(key)
@@ -94,6 +94,13 @@ dubbo.application.qos.port=33333
 dubbo.application.qos.accept.foreign.ip=true
 ```
 
+2.6.0版本
+
+```
+-Ddubbo.qos.port=33333
+-Ddubbo.qos.accept.foreign.ip=true
+```
+
 2.6.1以上版本：
 
 ```
@@ -101,6 +108,10 @@ dubbo.application.qosEnable=true
 dubbo.application.qosPort=33333
 dubbo.application.qosAcceptForeignIp=true
 ```
+
+**注意：**
+
+2.6.0版本默认启用qos服务且不能通过配置文件关闭qos服务
 
 
 
