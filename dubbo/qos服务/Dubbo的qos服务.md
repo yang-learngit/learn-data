@@ -113,6 +113,12 @@ dubbo.application.qosAcceptForeignIp=true
 
 2.6.0版本默认启用qos服务且不能通过配置文件关闭qos服务
 
+![](https://raw.githubusercontent.com/yang-zhijiang/learn-data/master/dubbo/qos%E6%9C%8D%E5%8A%A1/2.6.0%E4%B8%8D%E8%AF%BB%E5%90%AF%E7%94%A8%E9%85%8D%E7%BD%AE.jpg)
+
+2.6.0版本默认启用qos服务可以通过配置文件关闭qos服务
+
+![](https://raw.githubusercontent.com/yang-zhijiang/learn-data/master/dubbo/qos%E6%9C%8D%E5%8A%A1/2.6.1%E8%AF%BB%E5%90%AF%E7%94%A8%E9%85%8D%E7%BD%AE.png)
+
 
 
 
