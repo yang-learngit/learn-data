@@ -63,7 +63,7 @@ mysql主备复制实现：
 
 **canal处理binlog的流程**
 
-
+![](https://github.com/yang-zhijiang/learn-data/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8C%E6%AD%A5%E7%BB%84%E4%BB%B6canal/%E5%9B%BE%E7%89%87/1-7.canal%E5%A4%84%E7%90%86binlog%E7%9A%84%E6%B5%81%E7%A8%8B.png?raw=true)
 
 ## Canal内部组件解析
 
