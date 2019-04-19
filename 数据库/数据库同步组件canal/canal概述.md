@@ -386,7 +386,9 @@ canal还有几种连接方式：
 
 ## 参考资料
 
-1. 1. https://github.com/alibaba/canal
+1、gitlab：https://github.com/alibaba/canal
+
+2、主要原理介绍：https://github.com/alibaba/canal/wiki/canal%E4%BB%8B%E7%BB%8D
 
 
 
