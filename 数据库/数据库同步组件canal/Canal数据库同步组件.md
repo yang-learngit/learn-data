@@ -40,6 +40,8 @@
 
 ###     **1、整体架构**
 
+![](https://github.com/yang-zhijiang/learn-data/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8C%E6%AD%A5%E7%BB%84%E4%BB%B6canal/%E5%9B%BE%E7%89%87/2-1.%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84.png?raw=true)
+
    1）、每个Canal 集群应该至少有2个Canal实例，软硬件配置应该对等。我们不应该在同一个Cluster的多个节点上，配置有任何差异。
 
 ​    2）、一个Canal可以多个“instances”，每个instance对应一个“MySQL实例”的一个database（专业来说，一个instance对应一个MySQL实例，支持其上的多个databases）；简单而言，我们认为一个instance相当于一个逻辑Slave。
@@ -84,9 +86,7 @@
 
 ###     **2、Canal内部组件解析**
 
-
-
-
+![](https://github.com/yang-zhijiang/learn-data/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8C%E6%AD%A5%E7%BB%84%E4%BB%B6canal/%E5%9B%BE%E7%89%87/2-2.canal%E5%86%85%E9%83%A8%E7%BB%84%E4%BB%B6.png?raw=true)
 
 ​    1）Canal节点，可以有多个instances，每个instance在运行时为一个单独的Spring Context，对象实例为“CanalInstanceWithSpring”。
 
