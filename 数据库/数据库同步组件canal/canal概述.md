@@ -19,7 +19,7 @@ canal是阿里巴巴旗下的一款开源项目，纯Java开发。基于数据�
 
 mysql主备复制实现：
 
-
+![](https://github.com/yang-zhijiang/learn-data/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8C%E6%AD%A5%E7%BB%84%E4%BB%B6canal/%E5%9B%BE%E7%89%87/1-1%E3%80%81mysql%E4%B8%BB%E5%A4%87%E5%A4%8D%E5%88%B6%E5%AE%9E%E7%8E%B0.png?raw=true)
 
 从上层来看，复制分成三步：
 
@@ -29,13 +29,57 @@ mysql主备复制实现：
 
 ### canal的工作原理
 
-
+![](https://github.com/yang-zhijiang/learn-data/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8C%E6%AD%A5%E7%BB%84%E4%BB%B6canal/%E5%9B%BE%E7%89%87/1-2%E3%80%81canal%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86.png?raw=true)
 
 原理相对比较简单：
 
 1. canal模拟mysql slave的交互协议，伪装自己为mysql slave，向mysql master发送dump协议
 2. mysql master收到dump请求，开始推送binary log给slave(也就是canal)
 3. canal解析binary log对象(原始为byte流)
+
+###  **MySQL本身的binlog主从同步的限制**
+
+首先，架构单一，不灵活：MySQL本身支持双主同步，不会发生回环的原因是执行relay log中的sql不会再被写回binlog。
+
+第二，主从同步受限于同构表级别的同步。而且，不能控制是否同步DDL。
+
+第三，MySQL的主从复制都是单线程的操作，主库对所有DDL和DML产生binlog，binlog是顺序写，所以效率很高，slave的Slave_IO_Running线程到主库取日志，问题来了，slave的Slave_SQL_Running线程将主库的DDL和DML操作在slave实施。DML和DDL的IO操作是随即的，不是顺序的，成本高很多。
+
+第四，MySQL的主从同步传输的binlog包是完整的binlog，未经压缩，有时候网络压力会很大。
+
+
+
+## 使用canal原因
+
+1、更灵活的架构，多机房同步比较简单。
+
+2、 异构表之间也可以同步，同时，可以控制不同步DDL以免出现数据丢失和不一致。
+
+3、Canal可以实现一个表一线程，多个表多线程的同步，速度更快。同时会压缩简化要传输的binlog，减少网络压力。
+
+4、双A机房同步. 目前mysql的M-M部署结构，不支持解决数据的一致性问题，基于canal的双向复制+一致性算法，可一定程度上解决这个问题，实现双A机房.
+
+ 
+
+**canal处理binlog的流程**
+
+
+
+## Canal内部组件解析
+
+1、instance内部有EventParser、EventSink、EventStore、metaManager主要四个组件构成，当然还有其他的守护组件比如monitor、HA心跳检测、ZK事件监听等。对象实例初始化和依赖关系，可以参见“default-instance.xml”，其配置模式为普通的Spring。（源码：SpringCanalInstanceGenerator）。
+
+2、Parser主要用于解析指定"数据库"的binlog，内部基于JAVA实现了“binlog dump”、“show master status”等。Parser会与ZK交互，并获取当前instance所有消费者的cursor，并获其最小值，作为此instance解析binlog的起始position。目前的实现方式是，一个instance同时只能有一个consumer处于active消费状态，ClientId为定值“1001”，“cursor”中包含consumer消费binlog的position，数字类型。由此可见，Canal instance本身并没有保存binlog的position，Parser中继操作是根据consumer的消费cursor位置来决定；对于信息缺失时，比如Canal集群初次online，且在“default-instance.xml”中也没有指定“masterPositiion”信息(每个instance.properties是可以指定起始position的)，那么将根据“show master status”指令获取当前binlog的最后位置。（源码：MysqlEventParser.findStartPosition()）
+
+3、Parser每次、批量获取一定条数的binlog，将binlog数据封装成event，并经由EventSink将消息转发给EventStore，Sink的作用就是“协调Parser和Store”，确保binglog的解析速率与Store队列容量相容。（源码：AbstractEventParser.start(),EntryEventSink.sink()）
+
+4、EventStore，用于暂存“尚未消费”的events的存储队列，默认基于内存的阻塞队列实现。Store中的数据由Sink组件提交入队，有NettyServer服务的消费者消费确认后出队，队列的容量和容量模式由“canal.properties”中的“memory”相关配置决定。当Store中容量溢满时，将会阻塞Sink操作（间接阻塞Parser），所以消费者的效能会直接影响instance的同步效率。
+
+5、metaManager：主要用于保存Parser组件、CanalServer（即本文中提到的NettyServer）、Canal Instances的meta数据，其中Parser组件涉及到的是binlog position、CanalServer与消费者交互时ACK的Cursor信息、instance的集群运行时信息等。根据官方解释，我们在生产环境级别、高可靠业务要求场景下，metaManager建议基于Zookeeper实现。
+
+其中有关Position信息由CanalLogPositionManager类负责，其实现类有多个，在Cluster模式下，建议基于FailbackLogPositionManager，其内部有“primary”、“failback”两级组合，优先基于primary来存取Position，只有当primary异常时会“降级”使用failback；其配置模式，建议与“default-instance.xml”保持一致。
+
+
 
 
 
@@ -49,15 +93,13 @@ mysql主备复制实现：
 
 可以参考下图：
 
-
+![](https://github.com/yang-zhijiang/learn-data/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8C%E6%AD%A5%E7%BB%84%E4%BB%B6canal/%E5%9B%BE%E7%89%87/1-3%E3%80%81%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1.png?raw=true)
 
 
 
 ### canal架构设计
 
-
-
-
+![](https://github.com/yang-zhijiang/learn-data/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8C%E6%AD%A5%E7%BB%84%E4%BB%B6canal/%E5%9B%BE%E7%89%87/1-4%E3%80%81canal%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1.png?raw=true)
 
 说明：
 
@@ -73,7 +115,7 @@ instance模块：
 
 ### EventParser
 
-
+![](https://github.com/yang-zhijiang/learn-data/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8C%E6%AD%A5%E7%BB%84%E4%BB%B6canal/%E5%9B%BE%E7%89%87/1-5%E3%80%81EventParser.png?raw=true)
 
 整个parser过程大致可分为几部：
 
@@ -86,7 +128,7 @@ instance模块：
 
 ### EventSink设计
 
-
+![](https://github.com/yang-zhijiang/learn-data/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8C%E6%AD%A5%E7%BB%84%E4%BB%B6canal/%E5%9B%BE%E7%89%87/1-6%E3%80%81EventSink%E8%AE%BE%E8%AE%A1.png?raw=true)
 
 说明：
 
@@ -108,7 +150,7 @@ instance模块：
 目前实现了Memory内存、本地file存储以及持久化到zookeeper以保障数据集群共享。
 Memory内存的RingBuffer设计：
 
-
+![](https://github.com/yang-zhijiang/learn-data/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8C%E6%AD%A5%E7%BB%84%E4%BB%B6canal/%E5%9B%BE%E7%89%87/1-7%E3%80%81EventStore%E8%AE%BE%E8%AE%A1.png?raw=true)
 
 定义了3个cursor
 
@@ -118,7 +160,7 @@ Memory内存的RingBuffer设计：
 
 借鉴Disruptor的RingBuffer的实现，将RingBuffer拉直来看：
 
-
+![](https://github.com/yang-zhijiang/learn-data/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8C%E6%AD%A5%E7%BB%84%E4%BB%B6canal/%E5%9B%BE%E7%89%87/1-8%E3%80%81RingBuffer.png?raw=true)
 
 实现说明：
 
@@ -127,7 +169,7 @@ Memory内存的RingBuffer设计：
 
 ### Instance设计
 
-
+![](https://github.com/yang-zhijiang/learn-data/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8C%E6%AD%A5%E7%BB%84%E4%BB%B6canal/%E5%9B%BE%E7%89%87/1-9%E3%80%81Instance%E8%AE%BE%E8%AE%A1.png?raw=true)
 
 instance代表了一个实际运行的数据队列，包括了EventPaser,EventSink,EventStore等组件。
 抽象了CanalInstanceGenerator，主要是考虑配置的管理方式：
@@ -143,7 +185,7 @@ instance代表了一个实际运行的数据队列，包括了EventPaser,EventSi
 
 ### Server设计
 
-
+![](https://github.com/yang-zhijiang/learn-data/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8C%E6%AD%A5%E7%BB%84%E4%BB%B6canal/%E5%9B%BE%E7%89%87/1-10%E3%80%81Server%E8%AE%BE%E8%AE%A1.png?raw=true)
 
 server代表了一个canal的运行实例，为了方便组件化使用，特意抽象了Embeded(嵌入式) / Netty(网络访问)的两种实现：
 
@@ -152,7 +194,7 @@ server代表了一个canal的运行实例，为了方便组件化使用，特意
 
 ### 增量订阅/消费设计
 
-
+![](https://github.com/yang-zhijiang/learn-data/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8C%E6%AD%A5%E7%BB%84%E4%BB%B6canal/%E5%9B%BE%E7%89%87/1-11%E3%80%81%E5%A2%9E%E9%87%8F%E8%AE%A2%E9%98%85.png?raw=true)
 
 具体的协议格式，可参见：CanalProtocol.proto
 get/ack/rollback协议介绍：
@@ -169,7 +211,7 @@ get/ack/rollback协议介绍：
 
 流式api设计：
 
-
+![](https://github.com/yang-zhijiang/learn-data/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8C%E6%AD%A5%E7%BB%84%E4%BB%B6canal/%E5%9B%BE%E7%89%87/1-12%E3%80%81%E6%B5%81%E5%BC%8Fapi%E8%AE%BE%E8%AE%A1.png?raw=true)
 
 - 每次get操作都会在meta中产生一个mark，mark标记会递增，保证运行过程中mark的唯一性
 - 每次的get操作，都会在上一次的mark操作记录的cursor继续往后取，如果mark不存在，则在last ack cursor继续往后取
@@ -263,7 +305,7 @@ canal的HA分为两部分，canal server和canal client分别有对应的ha实�
 
 Canal Server:
 
-
+![](https://github.com/yang-zhijiang/learn-data/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8C%E6%AD%A5%E7%BB%84%E4%BB%B6canal/%E5%9B%BE%E7%89%87/1-13%E3%80%81Canal%20Server.png?raw=true)
 
 大致步骤：
 
@@ -275,7 +317,7 @@ Canal Server:
 
 HA配置架构图（举例）如下所示：
 
-
+![](https://github.com/yang-zhijiang/learn-data/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8C%E6%AD%A5%E7%BB%84%E4%BB%B6canal/%E5%9B%BE%E7%89%87/1-14%E3%80%81HA%E9%85%8D%E7%BD%AE%E6%9E%B6%E6%9E%84%E5%9B%BE.png?raw=true)
 
 ### canal其他链接方式
 
@@ -283,33 +325,33 @@ canal还有几种连接方式：
 
 **1. 单连**
 
-
+![](https://github.com/yang-zhijiang/learn-data/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8C%E6%AD%A5%E7%BB%84%E4%BB%B6canal/%E5%9B%BE%E7%89%87/1-15%E3%80%81%E5%8D%95%E8%BF%9E.png?raw=true)
 
 **2. 两个client+两个instance+1个mysql**
 
 当mysql变动时，两个client都能获取到变动
 
-
+![](https://github.com/yang-zhijiang/learn-data/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8C%E6%AD%A5%E7%BB%84%E4%BB%B6canal/%E5%9B%BE%E7%89%87/1-16%E3%80%81%E4%B8%A4%E4%B8%AAclient+%E4%B8%A4%E4%B8%AAinstance+1%E4%B8%AAmysql.png?raw=true)
 
 **3. 一个server+两个instance+两个mysql+两个client**
 
-
+![](https://github.com/yang-zhijiang/learn-data/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8C%E6%AD%A5%E7%BB%84%E4%BB%B6canal/%E5%9B%BE%E7%89%87/1-17%E3%80%81%E4%B8%80%E4%B8%AAserver+%E4%B8%A4%E4%B8%AAinstance+%E4%B8%A4%E4%B8%AAmysql+%E4%B8%A4%E4%B8%AAclient.png?raw=true)
 
 **4. instance的standby配置**
 
-
+![](https://github.com/yang-zhijiang/learn-data/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8C%E6%AD%A5%E7%BB%84%E4%BB%B6canal/%E5%9B%BE%E7%89%87/1-18%E3%80%81instance%E7%9A%84standby%E9%85%8D%E7%BD%AE.png?raw=true)
 
 ## 整体架构
 
 从整体架构上来说canal是这种架构的（canal中没有包含一个运维的console web来对接，但要运用于分布式环境中肯定需要一个Manager来管理）：
 
-
+![](https://github.com/yang-zhijiang/learn-data/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8C%E6%AD%A5%E7%BB%84%E4%BB%B6canal/%E5%9B%BE%E7%89%87/1-19%E3%80%81%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84.png?raw=true)
 
 一个总体的manager system对应于n个Canal Server（物理上来说是一台服务器）, 那么一个Canal Server对应于n个Canal Instance(destinations). 大体上是三层结构，第二层也需要Manager统筹运维管理。
 
 那么随着Docker技术的兴起，是否可以试一下下面的架构呢？
 
-
+![](https://github.com/yang-zhijiang/learn-data/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8C%E6%AD%A5%E7%BB%84%E4%BB%B6canal/%E5%9B%BE%E7%89%87/1-20%E3%80%81Docker%E6%9E%B6%E6%9E%84.png?raw=true)
 
 - 一个docker中跑一个instance服务，相当于略去server这一层的概念。
 - Manager System中配置一个instance,直接调取一个docker发布这个instance,其中包括向这个instance发送配置信息，启动instance服务.
