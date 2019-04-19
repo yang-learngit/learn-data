@@ -45,7 +45,7 @@ set statistics time off
 
 打开你查询之后的消息里面就能看到啦。
 
-
+![](https://github.com/yang-zhijiang/learn-data/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/%E5%9B%BE%E7%89%87/1-%E6%9F%A5%E7%9C%8B%E6%89%A7%E8%A1%8C%E6%97%B6%E9%97%B4%E5%92%8Ccpu%E5%8D%A0%E7%94%A8%E6%97%B6%E9%97%B4.jpg?raw=true)
 
 **2.查看查询对I/0的操作情况**
 
@@ -57,7 +57,7 @@ set statistics io off
 
 执行之后
 
-
+![](https://github.com/yang-zhijiang/learn-data/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/%E5%9B%BE%E7%89%87/2-%E6%9F%A5%E7%9C%8BIO%E7%9A%84%E6%93%8D%E4%BD%9C.jpg?raw=true)
 
 扫描计数：索引或表扫描次数
 
@@ -81,15 +81,15 @@ lob预读：查询过程中，从磁盘放入缓存的image，text，ntext或大
 
 查询--->>查询选项--->>高级
 
-
+![](https://github.com/yang-zhijiang/learn-data/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/%E5%9B%BE%E7%89%87/3-%E8%AE%BE%E7%BD%AE%E6%9F%A5%E8%AF%A2%E9%80%89%E9%A1%B9.jpg?raw=true)
 
 被红圈套上的2个选上，去掉sql语句中的set statistics io/time on/off 试试效果。哦也，你成功啦。。
 
 **3.查看执行计划，执行计划详解**
 
-选中查询语句，点击 然后看消息里面，会出现下面的图例
+选中查询语句，点击![](https://github.com/yang-zhijiang/learn-data/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/%E5%9B%BE%E7%89%87/4-%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92%E6%8C%89%E9%92%AE.jpg?raw=true)然后看消息里面，会出现下面的图例
 
-
+![](https://github.com/yang-zhijiang/learn-data/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/%E5%9B%BE%E7%89%87/5-%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92.jpg?raw=true)
 
 首先我这个例子的语句太过简单，你整个复杂的，包涵啊。
 
@@ -109,7 +109,7 @@ distinct在查询一个字段或者很少字段的情况下使用，会避免重
 
 但是查询字段很多的情况下使用，则会大大降低查询效率。
 
-
+![](https://github.com/yang-zhijiang/learn-data/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/%E5%9B%BE%E7%89%87/6-distinct.jpg?raw=true)
 
 由这个图，分析下:
 
@@ -153,6 +153,8 @@ select * from
 inner join product p on op.proNum=p.productnum) 
 ```
 
+![](https://github.com/yang-zhijiang/learn-data/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/%E5%9B%BE%E7%89%87/7-union.jpg?raw=true)
+
 由此可见效率确实低，所以不是在必要情况下避免使用。其实有他执行的第三部：对结果集进行排序，过滤重复记录。就能看出不是什么好鸟。然而不对结果集排序过滤，显然效率是比union高的，那么不排序过滤的关键字有吗？答，有，他是union all，使用union all能对union进行一定的优化。。
 
 **4.判断表中是否存在数据**
@@ -183,7 +185,7 @@ select * from
  where o.OrderId>10000
 ```
 
-
+![](https://github.com/yang-zhijiang/learn-data/blob/master/%E6%95%B0%E6%8D%AE%E5%BA%93/%E5%9B%BE%E7%89%87/8-%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96.jpg?raw=true)
 
 由此可见减少连接表的数据数量可以提高效率。
 
