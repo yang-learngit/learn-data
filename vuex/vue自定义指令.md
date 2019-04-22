@@ -186,7 +186,7 @@ Vue.js 2.0中模拟DOM模型树就是VNode，Render函数执行后都会返回VN
 
 通过console.log(this)打印出来的VueComponent我们就能看到vnode节点的信息。
 
-![1535511457811](C:\Users\Administrator\Desktop\技术文档\1535511457811.png)
+![](https://github.com/yang-zhijiang/learn-data/blob/master/vuex/img/1-vnode%E7%BB%93%E6%9E%84.png?raw=true)
 
 #### 触发原则
 
@@ -198,7 +198,7 @@ Vue.js 2.0中模拟DOM模型树就是VNode，Render函数执行后都会返回VN
 
 在上图中，我们没有看到vnode存在任何指令的值，那值变化如何触发？我们再来看一张截图，一目了然
 
-![1535513848291](C:\Users\Administrator\Desktop\技术文档\1535513848291.png)
+![](https://github.com/yang-zhijiang/learn-data/blob/master/vuex/img/1-vnode%E8%A7%A6%E5%8F%91.png?raw=true)
 
 
 
@@ -218,9 +218,11 @@ Vue.directive('has', {
 
 层层挖掘，我们看到vnode里面包含了vuex的$store,而里面又包含了各种保存的数据。就是说vuex里保存的任一数据发生了更新，对于vue来说，vnode就是更新了，触发钩子。
 
-![1535514502809](C:\Users\Administrator\Desktop\技术文档\1535514502809.png)
+![](https://github.com/yang-zhijiang/learn-data/blob/master/vuex/img/1-vnode%E6%9B%B4%E6%96%B01.png?raw=true)
 
-![1535514628411](C:\Users\Administrator\Desktop\技术文档\1535514628411.png)
+![](https://github.com/yang-zhijiang/learn-data/blob/master/vuex/img/1-vnode%E6%9B%B4%E6%96%B02.png?raw=true)
+
+
 
 ### unbind
 

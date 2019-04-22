@@ -232,9 +232,7 @@ modules 模块化 以及 组件中引入 mapGetters、mapActions 和 mapStates�
 
 首先，在store文件夹下面新建一个modules文件夹，然后在modules文件里面建立需要管理状态的js文件，既然要把不同部分的状态分开管理，那就要把它们给分成独立的状态文件了，如下图:
 
-
-
-
+![](https://github.com/yang-zhijiang/learn-data/blob/master/vuex/img/2-modules.png?raw=true)
 
 而对应的store文件夹下面的index.js 里面的内容就直接改写成：
 
@@ -481,14 +479,3 @@ import {mapState,mapGetters,mapActions} from 'vuex';
 ```
 
 至此，vuex中的常用的一些知识点使用算是简单的分享完了，当然了，相信这些只是一些皮毛！只能说是给予刚接触vuex的初学者一个参考与了解吧！有哪里不明白的或不对的，留言下，咱们可以一起讨论、共同学习！
-
-
-
-
-
-
-
-
-
-
-
