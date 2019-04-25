@@ -84,5 +84,5 @@ throw new UnsupportedOperationException();
 
 除了这个emptyList，之外，还有类似的，emptyMap，emptySet等等。具体看下图，都是一个套路。
 
-
+![](https://github.com/yang-zhijiang/learn-data/blob/master/java/Collections/img/1-empty.png?raw=true)
 
